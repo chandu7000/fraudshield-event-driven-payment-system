@@ -29,9 +29,15 @@ function Login() {
   }, [message]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name === "loginEmail"
+        ? "email"
+        : name === "loginPassword"
+          ? "password"
+          : name]: value,
     });
 
     setMessage("");
@@ -98,11 +104,10 @@ function Login() {
 
             {message && (
               <div
-                className={`mb-5 rounded-xl p-4 text-sm font-medium ${
-                  messageType === "success"
-                    ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                    : "bg-red-100 text-red-700 border border-red-200"
-                }`}
+                className={`mb-5 rounded-xl p-4 text-sm font-medium ${messageType === "success"
+                  ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                  : "bg-red-100 text-red-700 border border-red-200"
+                  }`}
               >
                 {message}
               </div>
@@ -116,10 +121,11 @@ function Login() {
 
                 <input
                   type="email"
-                  name="email"
+                  name="loginEmail"
                   placeholder="Enter registered email"
                   value={formData.email}
                   onChange={handleChange}
+                  autoComplete="off"
                   className="w-full border border-slate-300 rounded-xl p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
                   required
                 />
@@ -133,7 +139,8 @@ function Login() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="password"
+                    name="loginPassword"
+                    autoComplete="new-password"
                     placeholder="Enter password"
                     value={formData.password}
                     onChange={handleChange}

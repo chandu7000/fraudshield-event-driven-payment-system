@@ -50,14 +50,23 @@ function Register() {
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    const fieldName =
+      name === "registerEmail"
+        ? "email"
+        : name === "registerPassword"
+          ? "password"
+          : name;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [fieldName]: value,
     });
 
     clearMessage();
 
-    if (e.target.name === "email") {
+    if (fieldName === "email") {
       setOtp("");
       setOtpSent(false);
       setOtpVerified(false);
@@ -216,8 +225,8 @@ function Register() {
             {message && (
               <div
                 className={`mb-5 rounded-xl p-4 text-sm font-medium ${messageType === "success"
-                    ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                    : "bg-red-100 text-red-700 border border-red-200"
+                  ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                  : "bg-red-100 text-red-700 border border-red-200"
                   }`}
               >
                 {message}
@@ -249,7 +258,8 @@ function Register() {
                 <div className="flex gap-2">
                   <input
                     type="email"
-                    name="email"
+                    name="registerEmail"
+                    autoComplete="off"
                     placeholder="Enter registered email"
                     value={formData.email}
                     onChange={handleChange}
@@ -315,7 +325,8 @@ function Register() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="password"
+                    name="registerPassword"
+                    autoComplete="new-password"
                     placeholder="Create secure password"
                     value={formData.password}
                     onChange={handleChange}
