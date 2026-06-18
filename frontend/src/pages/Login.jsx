@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { loginUser } from "../services/authService";
 
 function Login() {
@@ -10,6 +10,8 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -128,15 +130,26 @@ function Login() {
                   Password
                 </label>
 
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Enter password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full border border-slate-300 rounded-xl p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full border border-slate-300 rounded-xl p-3 pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               <div className="text-right">

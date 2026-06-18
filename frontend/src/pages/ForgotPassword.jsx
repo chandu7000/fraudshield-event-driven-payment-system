@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, MailCheck, KeyRound } from "lucide-react";
+import {
+  ShieldCheck,
+  MailCheck,
+  KeyRound,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import {
   sendForgotPasswordOtp,
   verifyForgotPasswordOtp,
@@ -13,6 +19,7 @@ function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -62,8 +69,8 @@ function ForgotPassword() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "Failed to send OTP.",
+        error.response?.data ||
+        "Failed to send OTP.",
         "error"
       );
     } finally {
@@ -90,8 +97,8 @@ function ForgotPassword() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "OTP verification failed.",
+        error.response?.data ||
+        "OTP verification failed.",
         "error"
       );
     } finally {
@@ -131,8 +138,8 @@ function ForgotPassword() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "Password reset failed.",
+        error.response?.data ||
+        "Password reset failed.",
         "error"
       );
     } finally {
@@ -171,11 +178,10 @@ function ForgotPassword() {
 
             {message && (
               <div
-                className={`mb-5 rounded-xl p-4 text-sm font-medium ${
-                  messageType === "success"
+                className={`mb-5 rounded-xl p-4 text-sm font-medium ${messageType === "success"
                     ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
                     : "bg-red-100 text-red-700 border border-red-200"
-                }`}
+                  }`}
               >
                 {message}
               </div>
@@ -214,8 +220,8 @@ function ForgotPassword() {
                     {loading && !otpSent
                       ? "Sending..."
                       : otpVerified
-                      ? "Verified"
-                      : "Send OTP"}
+                        ? "Verified"
+                        : "Send OTP"}
                   </button>
                 </div>
               </div>
@@ -270,16 +276,24 @@ function ForgotPassword() {
                     />
 
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Enter new password"
                       value={newPassword}
                       onChange={(e) => {
                         setNewPassword(e.target.value);
                         clearMessage();
                       }}
-                      className="w-full border border-slate-300 rounded-xl p-3 pl-10 text-sm sm:text-base outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                      className="w-full border border-slate-300 rounded-xl p-3 pl-10 pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
                       required
                     />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
                 </div>
               )}

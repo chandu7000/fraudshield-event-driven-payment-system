@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, MailCheck } from "lucide-react";
+import {
+  ShieldCheck,
+  MailCheck,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { registerUser, sendOtp, verifyOtp } from "../services/authService";
 
 function Register() {
@@ -15,6 +20,7 @@ function Register() {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -100,8 +106,8 @@ function Register() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "Failed to send OTP.",
+        error.response?.data ||
+        "Failed to send OTP.",
         "error"
       );
 
@@ -138,8 +144,8 @@ function Register() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "OTP verification failed.",
+        error.response?.data ||
+        "OTP verification failed.",
         "error"
       );
     } finally {
@@ -171,8 +177,8 @@ function Register() {
 
       showMessage(
         error.response?.data?.message ||
-          error.response?.data ||
-          "Registration failed.",
+        error.response?.data ||
+        "Registration failed.",
         "error"
       );
     } finally {
@@ -209,11 +215,10 @@ function Register() {
 
             {message && (
               <div
-                className={`mb-5 rounded-xl p-4 text-sm font-medium ${
-                  messageType === "success"
+                className={`mb-5 rounded-xl p-4 text-sm font-medium ${messageType === "success"
                     ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
                     : "bg-red-100 text-red-700 border border-red-200"
-                }`}
+                  }`}
               >
                 {message}
               </div>
@@ -262,8 +267,8 @@ function Register() {
                     {otpLoading
                       ? "Sending..."
                       : otpVerified
-                      ? "Verified"
-                      : "Send OTP"}
+                        ? "Verified"
+                        : "Send OTP"}
                   </button>
                 </div>
               </div>
@@ -307,15 +312,26 @@ function Register() {
                   Create Password
                 </label>
 
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Create secure password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Create secure password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full border border-slate-300 rounded-xl p-3 pr-12 outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               <button
