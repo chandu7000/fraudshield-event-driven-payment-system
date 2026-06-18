@@ -3,17 +3,21 @@ package com.sekhar.payment_fraud_system.kafka;
 import com.sekhar.payment_fraud_system.entity.Transaction;
 import com.sekhar.payment_fraud_system.repository.TransactionRepository;
 import com.sekhar.payment_fraud_system.service.FraudDetectionService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true", matchIfMissing = true)
 public class TransactionEventConsumer {
 
     private final TransactionRepository transactionRepository;
     private final FraudDetectionService fraudDetectionService;
 
-    public TransactionEventConsumer(TransactionRepository transactionRepository,
-                                    FraudDetectionService fraudDetectionService) {
+    public TransactionEventConsumer(
+            TransactionRepository transactionRepository,
+            FraudDetectionService fraudDetectionService
+    ) {
         this.transactionRepository = transactionRepository;
         this.fraudDetectionService = fraudDetectionService;
     }

@@ -1,10 +1,12 @@
 package com.sekhar.payment_fraud_system.kafka;
 
 import com.sekhar.payment_fraud_system.service.AuditLogService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true", matchIfMissing = true)
 public class FraudAlertEventConsumer {
 
     private final AuditLogService auditLogService;
@@ -13,10 +15,7 @@ public class FraudAlertEventConsumer {
         this.auditLogService = auditLogService;
     }
 
-    @KafkaListener(
-            topics = "fraud-alert-events",
-            groupId = "notification-group"
-    )
+    @KafkaListener(topics = "fraud-alert-events", groupId = "notification-group")
     public void consume(FraudAlertEvent event) {
 
         System.out.println("=================================");
@@ -35,7 +34,6 @@ public class FraudAlertEventConsumer {
                         + ", Transaction ID: " + event.getTransactionId()
                         + ", Account Number: " + event.getAccountNumber()
                         + ", Reason: " + event.getAlertReason()
-                        + ", Severity: " + event.getSeverity()
-        );
+                        + ", Severity: " + event.getSeverity());
     }
 }
