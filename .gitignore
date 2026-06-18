@@ -1,0 +1,80 @@
+HELP.md
+
+# Maven
+
+target/
+backend/target/
+frontend/dist/
+
+.mvn/wrapper/maven-wrapper.jar
+
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Environment Files (IMPORTANT)
+
+.env
+backend/.env
+frontend/.env
+
+# Logs
+
+*.log
+
+# Java
+
+*.class
+*.jar
+*.war
+*.ear
+
+### STS
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA
+
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans
+
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code
+
+.vscode/
+
+### OS Files
+
+.DS_Store
+Thumbs.db
+
+### Secrets
+
+application-secret.properties
+application-prod.properties
+
+### Frontend
+
+frontend/node_modules/
+
+### Docker
+
+docker-data/
