@@ -1,22 +1,39 @@
 package com.sekhar.payment_fraud_system.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sekhar.payment_fraud_system.entity.Notification;
 import com.sekhar.payment_fraud_system.repository.NotificationRepository;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final JavaMailSender mailSender;
+    private final ObjectMapper objectMapper;
+    private final HttpClient httpClient;
+
+    @Value("${BREVO_API_KEY:}")
+    private String brevoApiKey;
+
+    @Value("${BREVO_SENDER_EMAIL:fraudshieldbank@gmail.com}")
+    private String brevoSenderEmail;
+
+    @Value("${BREVO_SENDER_NAME:FraudShield}")
+    private String brevoSenderName;
 
     public NotificationService(NotificationRepository notificationRepository,
-                               JavaMailSender mailSender) {
+                               ObjectMapper objectMapper) {
         this.notificationRepository = notificationRepository;
-        this.mailSender = mailSender;
+        this.objectMapper = objectMapper;
+        this.httpClient = HttpClient.newHttpClient();
     }
 
     public Notification createNotification(String userEmail, String title, String message, String type) {
@@ -30,11 +47,45 @@ public class NotificationService {
 
     public void sendEmail(String toEmail, String subject, String body) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(toEmail);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
+            if (brevoApiKey == null || brevoApiKey.isBlank()) {
+                throw new RuntimeException("BREVO_API_KEY is missing");
+            }
+
+            Map<String, Object> payload = Map.of(
+                    "sender", Map.of(
+                            "name", brevoSenderName,
+                            "email", brevoSenderEmail
+                    ),
+                    "to", List.of(
+                            Map.of("email", toEmail)
+                    ),
+                    "subject", subject,
+                    "textContent", body
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("accept", "application/json")
+                    .header("api-key", brevoApiKey)
+                    .header("content-type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                System.out.println("Brevo email failed. Status: " + response.statusCode());
+                System.out.println("Brevo response: " + response.body());
+                throw new RuntimeException("Unable to send email. Please try again later.");
+            }
+
+            System.out.println("Email sent successfully using Brevo API to: " + toEmail);
+
         } catch (Exception e) {
             System.out.println("Email sending failed: " + e.getMessage());
             throw new RuntimeException("Unable to send email. Please try again later.");
