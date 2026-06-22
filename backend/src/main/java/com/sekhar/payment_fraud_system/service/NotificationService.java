@@ -37,6 +37,7 @@ public class NotificationService {
             mailSender.send(message);
         } catch (Exception e) {
             System.out.println("Email sending failed: " + e.getMessage());
+            throw new RuntimeException("Unable to send email. Please try again later.");
         }
     }
 
