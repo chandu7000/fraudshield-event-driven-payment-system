@@ -436,7 +436,7 @@ function Transactions() {
         <form
           onSubmit={handleSubmit}
           className={`grid grid-cols-1 ${role === "ADMIN"
-            ? "md:grid-cols-2 xl:grid-cols-7"
+            ? "md:grid-cols-2 xl:grid-cols-6"
             : "md:grid-cols-2 xl:grid-cols-4"
             } gap-4`}
         >
