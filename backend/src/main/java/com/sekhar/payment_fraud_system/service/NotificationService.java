@@ -90,6 +90,14 @@ public class NotificationService {
         }
     }
 
+    public void sendEmailSafe(String toEmail, String subject, String body) {
+        try {
+            sendEmail(toEmail, subject, body);
+        } catch (Exception e) {
+            System.out.println("Non-critical email failed: " + e.getMessage());
+        }
+    }
+
     public void sendPasswordChangeEmail(String userEmail) {
         sendEmail(
                 userEmail,
@@ -99,7 +107,7 @@ public class NotificationService {
     }
 
     public void sendFraudAlertEmail(String userEmail, String reason, String severity) {
-        sendEmail(
+        sendEmailSafe(
                 userEmail,
                 "FraudShield Fraud Alert",
                 "Hello,\n\nA fraud alert was generated on your account.\n\nReason: " + reason +
@@ -109,7 +117,7 @@ public class NotificationService {
     }
 
     public void sendFreezeEmail(String userEmail, String accountNumber) {
-        sendEmail(
+        sendEmailSafe(
                 userEmail,
                 "FraudShield Account Frozen",
                 "Hello,\n\nYour account " + accountNumber + " has been frozen by admin.\n\nPlease contact bank admin for more details.\n\nRegards,\nFraudShield Team"
@@ -117,7 +125,7 @@ public class NotificationService {
     }
 
     public void sendUnfreezeEmail(String userEmail, String accountNumber) {
-        sendEmail(
+        sendEmailSafe(
                 userEmail,
                 "FraudShield Account Unfrozen",
                 "Hello,\n\nYour account " + accountNumber + " has been unfrozen and is now active.\n\nRegards,\nFraudShield Team"
