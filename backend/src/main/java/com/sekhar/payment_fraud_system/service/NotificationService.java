@@ -17,7 +17,7 @@ import java.util.Map;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient;
 
     @Value("${BREVO_API_KEY:}")
@@ -29,10 +29,8 @@ public class NotificationService {
     @Value("${BREVO_SENDER_NAME:FraudShield}")
     private String brevoSenderName;
 
-    public NotificationService(NotificationRepository notificationRepository,
-                               ObjectMapper objectMapper) {
+    public NotificationService(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-        this.objectMapper = objectMapper;
         this.httpClient = HttpClient.newHttpClient();
     }
 
