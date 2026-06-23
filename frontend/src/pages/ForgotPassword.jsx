@@ -34,10 +34,10 @@ function ForgotPassword() {
     const timer = setTimeout(() => {
       setMessage("");
       setMessageType("");
-    }, 5000);
+    }, messageType === "success" ? 3000 : 5000);
 
     return () => clearTimeout(timer);
-  }, [message]);
+  }, [message, messageType]);
 
   const showMessage = (text, type) => {
     setMessage(text);
@@ -179,8 +179,8 @@ function ForgotPassword() {
             {message && (
               <div
                 className={`mb-5 rounded-xl p-4 text-sm font-medium ${messageType === "success"
-                    ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                    : "bg-red-100 text-red-700 border border-red-200"
+                  ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                  : "bg-red-100 text-red-700 border border-red-200"
                   }`}
               >
                 {message}

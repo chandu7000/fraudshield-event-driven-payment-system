@@ -34,10 +34,10 @@ function Beneficiaries() {
     const timer = setTimeout(() => {
       setMessage("");
       setMessageType("");
-    }, 5000);
+    }, messageType === "success" ? 3000 : 5000);
 
     return () => clearTimeout(timer);
-  }, [message]);
+  }, [message, messageType]);
 
   const clearMessage = () => {
     setMessage("");

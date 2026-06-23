@@ -43,6 +43,8 @@ function Reports() {
   const [accountReport, setAccountReport] = useState(null);
   const [monthlyTrend, setMonthlyTrend] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   const reportRef = useRef();
 
@@ -62,6 +64,8 @@ function Reports() {
       setMonthlyTrend(trendData);
     } catch (error) {
       console.error(error);
+      setMessage("Failed to load reports.");
+      setMessageType("error");
     } finally {
       setLoading(false);
     }
@@ -70,6 +74,17 @@ function Reports() {
   useEffect(() => {
     loadReports();
   }, []);
+
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+      setMessageType("");
+    }, messageType === "success" ? 3000 : 5000);
+
+    return () => clearTimeout(timer);
+  }, [message, messageType]);
 
   const formatMoney = (amount) =>
     `₹${Number(amount || 0).toLocaleString("en-IN")}`;
@@ -86,6 +101,11 @@ function Reports() {
   const hasFraudChartData = fraudSeverityData.some((item) => item.value > 0);
 
   const downloadCSV = () => {
+    const confirmDownload = window.confirm(
+      "Are you sure you want to download the CSV report?"
+    );
+
+    if (!confirmDownload) return;
     const rows = [
       ["Metric", "Value"],
       ["Total Accounts", accountReport?.totalAccounts ?? 0],
@@ -122,9 +142,18 @@ function Reports() {
     document.body.removeChild(link);
 
     window.URL.revokeObjectURL(url);
+
+    setMessage("CSV report downloaded successfully.");
+    setMessageType("success");
   };
 
   const downloadPDF = () => {
+    const confirmDownload = window.confirm(
+      "Are you sure you want to download the PDF report?"
+    );
+
+    if (!confirmDownload) return;
+
     const riskLevel =
       fraudReport?.highSeverityAlerts > 0 || fraudReport?.openAlerts > 0
         ? "HIGH"
@@ -202,7 +231,16 @@ function Reports() {
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       })
       .from(pdfContent)
-      .save();
+      .save()
+      .then(() => {
+        setMessage("PDF report downloaded successfully.");
+        setMessageType("success");
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessage("Failed to download PDF report.");
+        setMessageType("error");
+      });
   };
 
   if (loading) {
@@ -222,6 +260,16 @@ function Reports() {
           Transaction statistics, fraud insights, and business reports.
         </p>
       </div>
+      {message && (
+        <div
+          className={`mb-4 rounded-xl p-4 text-sm font-medium ${messageType === "success"
+            ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+            : "bg-red-100 text-red-700 border border-red-200"
+            }`}
+        >
+          {message}
+        </div>
+      )}
 
       <div ref={reportRef}>
         <div className="mb-8 bg-white rounded-2xl p-6 border shadow-sm">

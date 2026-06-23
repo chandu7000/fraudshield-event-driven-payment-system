@@ -23,6 +23,16 @@ function Notifications() {
     loadNotifications();
   }, []);
 
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   const handleMarkAsRead = async (id) => {
     try {
       await markNotificationAsRead(id);
@@ -67,9 +77,8 @@ function Notifications() {
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`p-5 flex items-start justify-between gap-4 ${
-                  notification.readStatus ? "bg-white" : "bg-blue-50"
-                }`}
+                className={`p-5 flex items-start justify-between gap-4 ${notification.readStatus ? "bg-white" : "bg-blue-50"
+                  }`}
               >
                 <div>
                   <h3 className="font-bold text-slate-900">

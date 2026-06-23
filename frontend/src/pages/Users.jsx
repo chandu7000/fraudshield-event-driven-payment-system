@@ -28,6 +28,26 @@ function Users() {
     loadUsers();
   }, []);
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   const handleDisable = async (userId) => {
     try {
       await disableUser(userId);
@@ -186,11 +206,10 @@ function Users() {
 
                       <td className="p-4 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.role === "ADMIN"
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${user.role === "ADMIN"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-blue-100 text-blue-700"
-                          }`}
+                            }`}
                         >
                           {user.role}
                         </span>
@@ -198,11 +217,10 @@ function Users() {
 
                       <td className="p-4 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.enabled
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${user.enabled
                               ? "bg-emerald-100 text-emerald-700"
                               : "bg-red-100 text-red-700"
-                          }`}
+                            }`}
                         >
                           {user.enabled ? "ENABLED" : "DISABLED"}
                         </span>
@@ -214,13 +232,12 @@ function Users() {
 
                       <td className="p-4 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.accountStatus === "ACTIVE"
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${user.accountStatus === "ACTIVE"
                               ? "bg-emerald-100 text-emerald-700"
                               : user.accountStatus === "FROZEN"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-slate-100 text-slate-700"
-                          }`}
+                                ? "bg-red-100 text-red-700"
+                                : "bg-slate-100 text-slate-700"
+                            }`}
                         >
                           {user.accountStatus}
                         </span>

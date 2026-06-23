@@ -164,6 +164,16 @@ function Dashboard() {
     fetchDashboardStats();
   }, []);
 
+  useEffect(() => {
+    if (!error) return;
+
+    const timer = setTimeout(() => {
+      setError("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
+
   const recentTransactions = [...transactions]
     .sort((a, b) => new Date(b.transactionTime) - new Date(a.transactionTime))
     .slice(0, 5);

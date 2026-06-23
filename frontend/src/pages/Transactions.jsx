@@ -79,6 +79,26 @@ function Transactions() {
     loadBeneficiaries();
   }, []);
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   const handleTransferModeChange = (mode) => {
     setTransferMode(mode);
     setFormData({ ...formData, toAccountNumber: "" });
@@ -410,8 +430,8 @@ function Transactions() {
         <form
           onSubmit={handleSubmit}
           className={`grid grid-cols-1 ${role === "ADMIN"
-              ? "md:grid-cols-2 xl:grid-cols-5"
-              : "md:grid-cols-2 xl:grid-cols-4"
+            ? "md:grid-cols-2 xl:grid-cols-5"
+            : "md:grid-cols-2 xl:grid-cols-4"
             } gap-4`}
         >
           {role === "ADMIN" && (

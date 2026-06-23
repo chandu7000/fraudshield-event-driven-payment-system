@@ -38,6 +38,17 @@ function Profile() {
     loadProfile();
   }, []);
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+      setMessageType("");
+    }, messageType === "success" ? 3000 : 5000);
+
+    return () => clearTimeout(timer);
+  }, [message, messageType]);
+
   const handlePasswordChange = (e) => {
     setPasswordData({
       ...passwordData,

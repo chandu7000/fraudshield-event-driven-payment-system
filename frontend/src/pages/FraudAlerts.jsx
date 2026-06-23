@@ -33,6 +33,26 @@ function FraudAlerts() {
     loadFraudAlerts();
   }, []);
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   const handleResolve = async (alertId) => {
     try {
       await resolveFraudAlert(alertId);
@@ -188,12 +208,12 @@ function FraudAlerts() {
                     <td className="p-4 whitespace-nowrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${alert.severity === "CRITICAL"
-                            ? "bg-red-200 text-red-800"
-                            : alert.severity === "HIGH"
-                              ? "bg-red-100 text-red-700"
-                              : alert.severity === "MEDIUM"
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-yellow-100 text-yellow-700"
+                          ? "bg-red-200 text-red-800"
+                          : alert.severity === "HIGH"
+                            ? "bg-red-100 text-red-700"
+                            : alert.severity === "MEDIUM"
+                              ? "bg-orange-100 text-orange-700"
+                              : "bg-yellow-100 text-yellow-700"
                           }`}
                       >
                         {alert.severity}
@@ -203,8 +223,8 @@ function FraudAlerts() {
                     <td className="p-4 whitespace-nowrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${alert.status === "RESOLVED"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-yellow-100 text-yellow-700"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-yellow-100 text-yellow-700"
                           }`}
                       >
                         {alert.status}

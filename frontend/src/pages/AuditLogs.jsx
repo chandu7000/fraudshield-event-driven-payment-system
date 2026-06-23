@@ -27,6 +27,16 @@ function AuditLogs() {
     loadAuditLogs();
   }, []);
 
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   const filteredLogs = logs.filter((log) => {
     const search = searchTerm.toLowerCase();
 

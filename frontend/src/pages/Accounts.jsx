@@ -49,6 +49,27 @@ function Accounts() {
     loadAccounts();
   }, []);
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+      setMessageType("");
+    }, messageType === "success" ? 3000 : 5000);
+
+    return () => clearTimeout(timer);
+  }, [message, messageType]);
+
+  useEffect(() => {
+    if (!statementError) return;
+
+    const timer = setTimeout(() => {
+      setStatementError("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [statementError]);
+
   const filteredAccounts = accounts.filter((account) => {
     const search = searchTerm.toLowerCase();
 
@@ -331,8 +352,8 @@ function Accounts() {
       {message && (
         <div
           className={`mb-6 rounded-xl p-4 text-sm font-medium ${messageType === "success"
-              ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-              : "bg-red-100 text-red-700 border border-red-200"
+            ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+            : "bg-red-100 text-red-700 border border-red-200"
             }`}
         >
           {message}
@@ -548,8 +569,8 @@ function Accounts() {
                     <td className="p-4 whitespace-nowrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${account.status === "ACTIVE"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-red-100 text-red-700"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-red-100 text-red-700"
                           }`}
                       >
                         {account.status}
@@ -749,8 +770,8 @@ function Accounts() {
                           <td className="p-4 whitespace-nowrap">
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-semibold ${transaction.type === "CREDIT"
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-red-100 text-red-700"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-red-100 text-red-700"
                                 }`}
                             >
                               {transaction.type}
@@ -767,8 +788,8 @@ function Accounts() {
 
                           <td
                             className={`p-4 font-semibold whitespace-nowrap ${transaction.type === "CREDIT"
-                                ? "text-emerald-600"
-                                : "text-red-600"
+                              ? "text-emerald-600"
+                              : "text-red-600"
                               }`}
                           >
                             {transaction.type === "CREDIT" ? "+" : "-"}
