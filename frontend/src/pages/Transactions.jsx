@@ -3,8 +3,8 @@ import { ArrowLeftRight, Search } from "lucide-react";
 import {
   getAllTransactions,
   getMyTransactions,
-  createTransaction,
   createMyTransfer,
+  createAdminTransfer,
 } from "../services/transactionService";
 import { getMyAccounts, lookupAccount } from "../services/accountService";
 import { getMyBeneficiaries } from "../services/beneficiaryService";
@@ -23,6 +23,8 @@ function Transactions() {
     fromAccountNumber: "",
     toAccountNumber: "",
     amount: "",
+    reason: "",
+    remarks: "",
   });
 
   const [message, setMessage] = useState("");
@@ -279,10 +281,12 @@ function Transactions() {
       }
 
       if (role === "ADMIN") {
-        await createTransaction({
+        await createAdminTransfer({
           fromAccountNumber: formData.fromAccountNumber,
           toAccountNumber: formData.toAccountNumber,
           amount: Number(formData.amount),
+          reason: formData.reason,
+          remarks: formData.remarks,
         });
       } else {
         const deviceId = getDeviceId();
@@ -300,6 +304,8 @@ function Transactions() {
         fromAccountNumber: "",
         toAccountNumber: "",
         amount: "",
+        reason: "",
+        remarks: "",
       });
 
       setReceiverName("");
@@ -430,7 +436,7 @@ function Transactions() {
         <form
           onSubmit={handleSubmit}
           className={`grid grid-cols-1 ${role === "ADMIN"
-            ? "md:grid-cols-2 xl:grid-cols-5"
+            ? "md:grid-cols-2 xl:grid-cols-6"
             : "md:grid-cols-2 xl:grid-cols-4"
             } gap-4`}
         >
@@ -512,11 +518,39 @@ function Transactions() {
             required
           />
 
+          {role === "ADMIN" && (
+            <>
+              <select
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                className="border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-slate-900"
+                required
+              >
+                <option value="">Select Reason</option>
+                <option value="Cheque Clearance">Cheque Clearance</option>
+                <option value="Branch Transfer">Branch Transfer</option>
+                <option value="Demand Draft">Demand Draft</option>
+                <option value="Bank Assisted Transfer">Bank Assisted Transfer</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <input
+                type="text"
+                name="remarks"
+                placeholder="Remarks (Optional)"
+                value={formData.remarks}
+                onChange={handleChange}
+                className="border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-slate-900"
+              />
+            </>
+          )}
+
           <button
             type="submit"
             className="bg-slate-900 text-white rounded-xl p-3 hover:bg-slate-800"
           >
-            Send Money
+            {role === "ADMIN" ? "Process Admin Transfer" : "Send Money"}
           </button>
         </form>
 

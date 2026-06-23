@@ -15,3 +15,7 @@ export const createTransaction = (transactionData) => {
 export const createMyTransfer = (transferData) => {
   return api.post("/api/transactions/my-transfer", transferData);
 };
+
+export const createAdminTransfer = (transferData) => {
+  return api.post("/api/transactions/admin-transfer", transferData);
+};

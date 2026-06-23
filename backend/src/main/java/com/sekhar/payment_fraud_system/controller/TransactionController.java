@@ -2,6 +2,7 @@ package com.sekhar.payment_fraud_system.controller;
 
 import com.sekhar.payment_fraud_system.dto.SecureTransferRequestDTO;
 import com.sekhar.payment_fraud_system.dto.TransactionRequestDTO;
+import com.sekhar.payment_fraud_system.dto.AdminTransferRequestDTO;
 import com.sekhar.payment_fraud_system.entity.Transaction;
 import com.sekhar.payment_fraud_system.service.TransactionService;
 import jakarta.validation.Valid;
@@ -22,8 +23,7 @@ public class TransactionController {
 
     @PostMapping
     public Transaction createTransaction(
-            @Valid @RequestBody TransactionRequestDTO requestDTO
-    ) {
+            @Valid @RequestBody TransactionRequestDTO requestDTO) {
 
         Transaction transaction = new Transaction();
 
@@ -34,11 +34,25 @@ public class TransactionController {
         return transactionService.createTransaction(transaction);
     }
 
+    @PostMapping("/admin-transfer")
+    public Transaction createAdminTransfer(
+            @Valid @RequestBody AdminTransferRequestDTO requestDTO,
+            Authentication authentication) {
+        String adminEmail = authentication.getName();
+
+        return transactionService.createAdminAssistedTransfer(
+                adminEmail,
+                requestDTO.getFromAccountNumber(),
+                requestDTO.getToAccountNumber(),
+                requestDTO.getAmount(),
+                requestDTO.getReason(),
+                requestDTO.getRemarks());
+    }
+
     @PostMapping("/my-transfer")
     public Transaction createMyTransfer(
             @Valid @RequestBody SecureTransferRequestDTO requestDTO,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
 
         String userEmail = authentication.getName();
 
@@ -47,8 +61,7 @@ public class TransactionController {
                 requestDTO.getToAccountNumber(),
                 requestDTO.getAmount(),
                 requestDTO.getDeviceId(),
-                requestDTO.getLocation()
-        );
+                requestDTO.getLocation());
     }
 
     @GetMapping
@@ -58,8 +71,7 @@ public class TransactionController {
 
     @GetMapping("/my")
     public List<Transaction> getMyTransactions(
-            Authentication authentication
-    ) {
+            Authentication authentication) {
 
         String userEmail = authentication.getName();
 
@@ -68,8 +80,7 @@ public class TransactionController {
 
     @GetMapping("/account/{accountNumber}")
     public List<Transaction> getTransactionsByAccount(
-            @PathVariable String accountNumber
-    ) {
+            @PathVariable String accountNumber) {
         return transactionService.getTransactionsByAccount(accountNumber);
     }
 }

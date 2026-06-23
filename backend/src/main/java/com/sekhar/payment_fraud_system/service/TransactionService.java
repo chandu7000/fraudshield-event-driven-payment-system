@@ -151,6 +151,122 @@ public class TransactionService {
         }
 
         @Transactional
+        public Transaction createAdminAssistedTransfer(
+                        String adminEmail,
+                        String fromAccountNumber,
+                        String toAccountNumber,
+                        BigDecimal amount,
+                        String reason,
+                        String remarks) {
+
+                Account fromAccount = accountRepository.findByAccountNumber(fromAccountNumber)
+                                .orElseThrow(() -> new ResourceNotFoundException("Sender account not found"));
+
+                Account toAccount = accountRepository.findByAccountNumber(toAccountNumber)
+                                .orElseThrow(() -> new ResourceNotFoundException("Receiver account not found"));
+
+                if (fromAccount.getAccountNumber().equals(toAccount.getAccountNumber())) {
+                        throw new RuntimeException("Sender and receiver account cannot be same");
+                }
+
+                if ("FROZEN".equalsIgnoreCase(fromAccount.getStatus())) {
+                        throw new RuntimeException("Sender account is frozen. Admin transfer is not allowed.");
+                }
+
+                if ("FROZEN".equalsIgnoreCase(toAccount.getStatus())) {
+                        throw new RuntimeException("Receiver account is frozen. Admin transfer is not allowed.");
+                }
+
+                if (fromAccount.getBalance().compareTo(amount) < 0) {
+                        throw new InsufficientBalanceException("Insufficient balance in sender account");
+                }
+
+                fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
+                toAccount.setBalance(toAccount.getBalance().add(amount));
+
+                accountRepository.save(fromAccount);
+                accountRepository.save(toAccount);
+
+                Transaction transaction = new Transaction();
+                transaction.setFromAccountNumber(fromAccount.getAccountNumber());
+                transaction.setToAccountNumber(toAccount.getAccountNumber());
+                transaction.setAmount(amount);
+                transaction.setTransactionType("ADMIN_ASSISTED_TRANSFER");
+                transaction.setStatus("SUCCESS");
+
+                Transaction savedTransaction = transactionRepository.save(transaction);
+
+                fraudDetectionService.checkTransactionForFraud(savedTransaction);
+
+                TransactionEvent transactionEvent = new TransactionEvent(
+                                savedTransaction.getId(),
+                                savedTransaction.getFromAccountNumber(),
+                                savedTransaction.getToAccountNumber(),
+                                savedTransaction.getAmount(),
+                                savedTransaction.getTransactionTime().toString());
+
+                transactionEventProducer.sendTransactionEvent(transactionEvent);
+
+                auditLogService.logAction(
+                                "ADMIN_ASSISTED_TRANSFER",
+                                adminEmail,
+                                "Admin assisted transfer completed. From " +
+                                                savedTransaction.getFromAccountNumber() +
+                                                " to " +
+                                                savedTransaction.getToAccountNumber() +
+                                                " Amount: " +
+                                                savedTransaction.getAmount() +
+                                                " Reason: " +
+                                                reason +
+                                                " Remarks: " +
+                                                (remarks == null || remarks.isBlank() ? "-" : remarks));
+
+                if (fromAccount.getUserEmail() != null && !fromAccount.getUserEmail().isBlank()) {
+                        notificationService.createNotification(
+                                        fromAccount.getUserEmail(),
+                                        "Admin Assisted Debit",
+                                        "₹" + savedTransaction.getAmount() +
+                                                        " debited from your account by bank admin. Reason: " + reason,
+                                        "TRANSACTION");
+
+                        notificationService.sendEmailSafe(
+                                        fromAccount.getUserEmail(),
+                                        "FraudShield Admin Assisted Debit",
+                                        "Hello,\n\n₹" + savedTransaction.getAmount() +
+                                                        " was debited from your account "
+                                                        + fromAccount.getAccountNumber() +
+                                                        " by bank admin.\n\nReason: " + reason +
+                                                        "\nRemarks: "
+                                                        + (remarks == null || remarks.isBlank() ? "-" : remarks) +
+                                                        "\nTransaction ID: " + savedTransaction.getId() +
+                                                        "\nStatus: SUCCESS\n\nRegards,\nFraudShield Team");
+                }
+
+                if (toAccount.getUserEmail() != null && !toAccount.getUserEmail().isBlank()) {
+                        notificationService.createNotification(
+                                        toAccount.getUserEmail(),
+                                        "Admin Assisted Credit",
+                                        "₹" + savedTransaction.getAmount() +
+                                                        " credited to your account by bank admin. Reason: " + reason,
+                                        "TRANSACTION");
+
+                        notificationService.sendEmailSafe(
+                                        toAccount.getUserEmail(),
+                                        "FraudShield Admin Assisted Credit",
+                                        "Hello,\n\n₹" + savedTransaction.getAmount() +
+                                                        " was credited to your account " + toAccount.getAccountNumber()
+                                                        +
+                                                        " by bank admin.\n\nReason: " + reason +
+                                                        "\nRemarks: "
+                                                        + (remarks == null || remarks.isBlank() ? "-" : remarks) +
+                                                        "\nTransaction ID: " + savedTransaction.getId() +
+                                                        "\nStatus: SUCCESS\n\nRegards,\nFraudShield Team");
+                }
+
+                return savedTransaction;
+        }
+
+        @Transactional
         public Transaction createMyTransfer(
                         String userEmail,
                         String toAccountNumber,
