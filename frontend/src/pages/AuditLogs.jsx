@@ -10,7 +10,12 @@ function AuditLogs() {
   const loadAuditLogs = async () => {
     try {
       const response = await getAllAuditLogs();
-      setLogs(response.data);
+
+      const sortedLogs = [...response.data].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      setLogs(sortedLogs);
       setErrorMessage("");
     } catch (error) {
       console.error(error);

@@ -16,15 +16,15 @@ public class FraudAlertService {
     }
 
     public List<FraudAlert> getAllFraudAlerts() {
-        return fraudAlertRepository.findAll();
+        return fraudAlertRepository.findAllByOrderByCreatedAtDesc();
     }
 
     public List<FraudAlert> getByStatus(String status) {
-        return fraudAlertRepository.findByStatus(status);
+        return fraudAlertRepository.findByStatusOrderByCreatedAtDesc(status);
     }
 
     public List<FraudAlert> getByAccountNumber(String accountNumber) {
-        return fraudAlertRepository.findByAccountNumber(accountNumber);
+        return fraudAlertRepository.findByAccountNumberOrderByCreatedAtDesc(accountNumber);
     }
 
     public FraudAlert resolveFraudAlert(Long alertId) {

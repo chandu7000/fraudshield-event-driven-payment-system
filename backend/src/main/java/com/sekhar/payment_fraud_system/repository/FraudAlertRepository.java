@@ -7,9 +7,11 @@ import java.util.List;
 
 public interface FraudAlertRepository extends JpaRepository<FraudAlert, Long> {
 
-    List<FraudAlert> findByAccountNumber(String accountNumber);
+    List<FraudAlert> findAllByOrderByCreatedAtDesc();
 
-    List<FraudAlert> findByStatus(String status);
+    List<FraudAlert> findByAccountNumberOrderByCreatedAtDesc(String accountNumber);
+
+    List<FraudAlert> findByStatusOrderByCreatedAtDesc(String status);
 
     List<FraudAlert> findBySeverity(String severity);
 
