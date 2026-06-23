@@ -548,7 +548,7 @@ function Transactions() {
 
           <button
             type="submit"
-            className="bg-slate-900 text-white rounded-xl px-5 py-3 hover:bg-slate-800 whitespace-nowrap"
+            className="bg-slate-900 text-white rounded-xl px-3 py-3 hover:bg-slate-800 whitespace-nowrap"
           >
             {role === "ADMIN" ? "Process Admin Transfer" : "Send Money"}
           </button>
